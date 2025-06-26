@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:OrcamentoCLI}",
+            "name": "Debug OrcamentoCLI",
+            "program": "${workspaceFolder:OrcamentoCLI}/.build/debug/OrcamentoCLI",
+            "preLaunchTask": "swift: Build Debug OrcamentoCLI"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:OrcamentoCLI}",
+            "name": "Release OrcamentoCLI",
+            "program": "${workspaceFolder:OrcamentoCLI}/.build/release/OrcamentoCLI",
+            "preLaunchTask": "swift: Build Release OrcamentoCLI"
+        }
+    ]
+}
