@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ItemOrcamento{
-    var id: String {get}
+    var id: UUID {get}
     var valor: Double {get set}
     var descricao: String {get set}
     var categoria: String {get set}

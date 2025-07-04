@@ -1,14 +1,14 @@
 import Foundation
 
 class GastoPessoal: ItemOrcamento{
-    let id: String
+    let id: UUID
     var valor: Double
     var descricao: String
     var categoria: String
     var data: Date
     
     init(valor: Double, descricao: String, categoria: TipoGastos, data: Date = Date()){
-        self.id = UUID().uuidString
+        self.id = UUID()
         self.valor = valor
         self.descricao = descricao
         self.categoria = categoria.rawValue
@@ -21,3 +21,4 @@ class GastoPessoal: ItemOrcamento{
         return "Gasto: \(descricao) (\(categoria)) - R$ \(valor) em \(dateFormatter.string(from: data))"
     }
 }
+
