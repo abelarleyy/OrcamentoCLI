@@ -123,6 +123,12 @@ class GerenciadorOrcamento{
             print("Receita com a descrição '\(descricaoAntiga)' não encontrada!")
         }
     }
+    func mediaReceitas() -> Double{
+        if receitas.count == 0{
+            return 0.0
+        }
+        return calcularReceitaTotal() / Double(receitas.count)
+    }
     func mediaGastos() -> Double{
         if gastos.count == 0{
             return 0.0
@@ -161,11 +167,12 @@ while rodandoMenu{
         print("9. Remover Gasto")
         print("10. Editar Receita")
         print("11. Editar Gasto")
-        print("12. Média de Gastos")
-        print("13. Definir Meta")
-        print("14. Editar Meta")
-        print("15. Meta de Economia")
-        print("16. Sair")
+        print("12. Média de Receitas")
+        print("13. Média de Gastos")
+        print("14. Definir Meta")
+        print("15. Editar Meta")
+        print("16. Meta de Economia")
+        print("17. Sair")
         print("\nDigite o número da opção: ")
 
     if let escolha = readLine(), let escolhaInt = Int(escolha){
@@ -327,9 +334,10 @@ while rodandoMenu{
                 let novaCategoria = TipoGastos.allCases[categoriaIndex - 1]
                 meuGerenciador.editarGasto(descricaoAntiga: descricaoAntigaStr, novaDescricao: novaDescricaoStr, novoValor: novoValor, novaCategoria: novaCategoria)
             case 12:
-                print("A média de gastos é: \(meuGerenciador.mediaGastos())")
-
+                print("A média de receitas é: \(meuGerenciador.mediaReceitas())")
             case 13:
+                print("A média de gastos é: \(meuGerenciador.mediaGastos())")
+            case 14:
                 print("--- Definir Meta de Economia ---")
                 print("Digite o valor da meta:")
                 if let metaStr = readLine(), let meta = Double(metaStr) {
@@ -339,7 +347,7 @@ while rodandoMenu{
                     print("Valor de meta inválido.")
                 }
 
-            case 14:
+            case 15:
                 print("--- Editar Meta de Economia ---")
                 print("Digite o novo valor da meta:")
                 if let novaMetaStr = readLine(), let novaMeta = Double(novaMetaStr) {
@@ -349,11 +357,11 @@ while rodandoMenu{
                     print("Valor de meta inválido.")
                 }
 
-            case 15:
+            case 16:
                 let falta = meuGerenciador.metaDeEconomia()
                 print(falta)
 
-            case 16:
+            case 17:
                 rodandoMenu = false
             default:
                 print("Opção inválida")
