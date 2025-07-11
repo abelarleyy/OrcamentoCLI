@@ -16,31 +16,44 @@ class GerenciadorOrcamento{
     func adicionarReceita(novaReceita: ReceitaPessoal){
         receitas.append(novaReceita)
         saldo += novaReceita.valor
-        print("Nova receita \(novaReceita.descricao) no valor de \(novaReceita.valor) adicionada com sucesso!)")
+        print("Nova receita \(novaReceita.descricao) no valor de \(novaReceita.valor) adicionada com sucesso!")
     }
 
     func adicionarGasto(novoGasto: GastoPessoal){
         gastos.append(novoGasto)
         saldo -= novoGasto.valor
-        print("Novo gasto \(novoGasto.descricao) no valor de \(novoGasto.valor) adicionado com sucesso!)")
+        print("Novo gasto \(novoGasto.descricao) no valor de \(novoGasto.valor) adicionado com sucesso!")
+    }
+
+    func mostrarTodasReceitas(){
+        for receita in receitas{
+            print(receita.descricaoFormatada())
+        }
+    }
+
+    func mostrarTodosGastos(){
+        for gasto in gastos{
+            print(gasto.descricaoFormatada())
+        }
     }
    
-    func consultaPorReceita(id: UUID){
+    func consultarReceitaNome(nome: String){
         for receita in receitas{
-            if receita.id == id{
+            if receita.descricao == nome{
                 print("Receita encontrada: \(receita.descricaoFormatada())")
                 return
             }
         }
-        print("Receita não encontrada!")
+        print("Receita não encontrada")
     }
-    func consultaPorGasto(id: UUID){
+    func consultarGastoNome(nome: String){
         for gasto in gastos{
-            if gasto.id == id{
+            if gasto.descricao == nome{
                 print("Gasto encontrado: \(gasto.descricaoFormatada())")
                 return
             }
         }
+        print("Gasto não encontrado")
     }
     func calcularGastoTotal() -> Double{
         var total = 0.0
@@ -58,44 +71,56 @@ class GerenciadorOrcamento{
         return total
     }
     
-    func removerGasto(id: UUID){
-        if let index = gastos.firstIndex(where: { $0.id == id }) {
+    func removerGastoPeloNome(nome: String){
+        if let index = gastos.firstIndex(where: { $0.descricao == nome }){
             let gastoRemovido = gastos.remove(at: index)
             saldo += gastoRemovido.valor
             print("Gasto \(gastoRemovido.descricao) removido com sucesso")
         } else {
-        print("Gasto não encontrado!")
+            print("Gasto não encontrado")
         }
     }
-    func editarGasto(id: UUID, novoValor: Double, novaDescricao: String, novaCategoria: TipoGastos){
-        if let index = gastos.firstIndex(where: { $0.id == id }) {
-            let gastoEditado = gastos[index]
-            gastoEditado.valor = novoValor
-            gastoEditado.descricao = novaDescricao
-            gastoEditado.categoria = novaCategoria.rawValue
-            print("Gasto \(gastoEditado.descricao) editado com sucesso")
-        } else {
-            print("Gasto não encontrado!")
-        }
-    }
-    func removerReceita(id: UUID){
-        if let index = receitas.firstIndex(where: { $0.id == id }){
+    func removerReceitaPeloNome(nome: String){
+        if let index = receitas.firstIndex(where: { $0.descricao == nome }){
             let receitaRemovida = receitas.remove(at: index)
             saldo -= receitaRemovida.valor
             print("Receita \(receitaRemovida.descricao) removida com sucesso")
         } else {
-            print("Receita não encontrada!")
+            print("Receita não encontrada")
         }
     }
-    func editarReceita(id: UUID, novoValor: Double, novaDescricao: String, novaCategoria: TiposReceitas){
-        if let index = receitas.firstIndex(where:{ $0.id == id}){
-            let receitaEditada = receitas[index]
-            receitaEditada.valor = novoValor
-            receitaEditada.descricao = novaDescricao
-            receitaEditada.categoria = novaCategoria.rawValue
-            print("Receita \(receitaEditada.descricao) editada com sucesso")
+    func editarGasto(descricaoAntiga: String, novaDescricao: String, novoValor: Double, novaCategoria: TipoGastos) {
+        if let index = gastos.firstIndex(where: { $0.descricao.lowercased() == descricaoAntiga.lowercased() }) {
+            let valorAntigo = gastos[index].valor
+            saldo += valorAntigo
+
+            gastos[index].descricao = novaDescricao
+            gastos[index].valor = novoValor
+            gastos[index].categoria = novaCategoria.rawValue
+            gastos[index].data = Date()
+
+            saldo -= novoValor
+
+            print("Gasto editado com sucesso!")
         } else {
-            print("Receita não encontrada!")
+            print("Gasto com a descrição '\(descricaoAntiga)' não encontrado!")
+        }
+    }
+     func editarReceita(descricaoAntiga: String, novaDescricao: String, novoValor: Double, novaCategoria: TiposReceitas) {
+        if let index = receitas.firstIndex(where: { $0.descricao.lowercased() == descricaoAntiga.lowercased() }) {
+            let valorAntigo = receitas[index].valor
+            saldo -= valorAntigo
+            
+            receitas[index].descricao = novaDescricao
+            receitas[index].valor = novoValor
+            receitas[index].categoria = novaCategoria.rawValue
+            receitas[index].data = Date()
+
+            saldo += novoValor
+            
+            print("Receita editada com sucesso!")
+        } else {
+            print("Receita com a descrição '\(descricaoAntiga)' não encontrada!")
         }
     }
     func mediaGastos() -> Double{
@@ -104,33 +129,234 @@ class GerenciadorOrcamento{
         }
         return calcularGastoTotal() / Double(gastos.count)
     }
+    func definirMeta(metaAtual: Double) -> Double{
+        metaEconomia = metaAtual
+        return metaEconomia 
+    }
+    func editarMeta(novaMeta: Double) -> Double{
+        metaEconomia = novaMeta
+        return metaEconomia
+    }
+    func metaDeEconomia() -> Double{
+        print("\nA meta de economia é de \(metaEconomia)")
+        print("O saldo atual é de \(saldo)")
+        print("E falta isso para atingir a meta: ")
+        return (metaEconomia - saldo)
+    }
 }
 
-let receita1 = ReceitaPessoal(valor: 150.0, descricao: "Trabalho de Social Media", categoria: .freelance)
-let receita2 = ReceitaPessoal(valor: 245.3, descricao: "Tesouro Nacional", categoria: .investimento)
-let gasto1 = GastoPessoal(valor: 50.0, descricao: "Mercado", categoria: .comida)
-let gasto2 = GastoPessoal(valor: 132.50, descricao: "Compra Online", categoria: .compra)
-
 let meuGerenciador = GerenciadorOrcamento()
-meuGerenciador.adicionarReceita(novaReceita: receita1)
-meuGerenciador.adicionarReceita(novaReceita: receita2)
-meuGerenciador.adicionarGasto(novoGasto: gasto1)
-meuGerenciador.adicionarGasto(novoGasto: gasto2)
+var rodandoMenu = true
 
-print("Saldo atual: \(meuGerenciador.saldo)")
-//print(meuGerenciador.consultaPorReceita(id: receita1.id))
-//meuGerenciador.removerGasto(id: gasto1.id)
-//print("Gasto total: \(meuGerenciador.calcularGastoTotal())")
-//print("Receita total: \(meuGerenciador.calcularReceitaTotal())")
-//print("Gasto 2: \(gasto2.descricaoFormatada())")
-//meuGerenciador.editarGasto(id: gasto2.id, novoValor: 100.00, novaDescricao: "Compra no Mercado", novaCategoria: .comida)
-//print("Gasto total: \(meuGerenciador.calcularGastoTotal())")
-//print("Gasto 2: \(gasto2.descricaoFormatada())")
+while rodandoMenu{
+        print("\n --- Menu Orçamento ---")
+        print("1. Mostrar Saldo")
+        print("2. Adicionar Receita")
+        print("3. Adicionar Gasto")
+        print("4. Mostrar Todas as Receitas")
+        print("5. Mostrar Todos os Gastos")
+        print("6. Consultar Receita pela descrição")
+        print("7. Consultar Gasto pela descrição")
+        print("8. Remover Receita")
+        print("9. Remover Gasto")
+        print("10. Editar Receita")
+        print("11. Editar Gasto")
+        print("12. Média de Gastos")
+        print("13. Definir Meta")
+        print("14. Editar Meta")
+        print("15. Meta de Economia")
+        print("16. Sair")
+        print("\nDigite o número da opção: ")
 
-//meuGerenciador.removerReceita(id: receita1.id)
-//print("Saldo atual: \(meuGerenciador.saldo)")
-//meuGerenciador.editarReceita(id: receita2.id, novoValor: 240.5, novaDescricao: "Tesouro Internacional", novaCategoria: .cashback)
-//print("Saldo atual: \(meuGerenciador.saldo)")
-//print("Receita 2: \(receita2.descricaoFormatada())")
+    if let escolha = readLine(), let escolhaInt = Int(escolha){
+        switch escolhaInt{
+            case 1:
+                print("O saldo atual é de \(meuGerenciador.saldo)")
+            case 2:
+                print("--- Adicionar Receita ---")
 
-print("Média de gastos: \(meuGerenciador.mediaGastos())")
+                print("Escolha a categoria da receita:")
+                for (index, tipo) in TiposReceitas.allCases.enumerated() {
+                    print("\(index + 1). \(tipo.rawValue)")
+                }
+                guard let categoriaIndexStr = readLine(),
+                      let categoriaIndex = Int(categoriaIndexStr),
+                      categoriaIndex > 0 && categoriaIndex <= TiposReceitas.allCases.count else {
+                    print("Seleção de categoria inválida.")
+                    continue
+                }
+
+                print("Digite a descrição da receita: ")
+                guard let descricaoReceita = readLine(), !descricaoReceita.isEmpty else {
+                    print("Descrição inválida.")
+                    continue
+                }
+                print("Digite o valor da receita: ")
+                guard let valorReceitaStr = readLine(), let valorReceita = Double(valorReceitaStr) else {
+                    print("Valor inválido.")
+                    continue
+                }
+                
+                let categoriaReceita = TiposReceitas.allCases[categoriaIndex - 1]
+
+                let novaReceita = ReceitaPessoal(valor: valorReceita, descricao: descricaoReceita, categoria: categoriaReceita)
+                meuGerenciador.adicionarReceita(novaReceita: novaReceita)
+            case 3:
+                print("--- Adicionar Gasto ---")
+
+                print("Escolha a categoria do gasto:")
+                for (index, tipo) in TipoGastos.allCases.enumerated() {
+                    print("\(index + 1). \(tipo.rawValue)")
+                }
+                guard let categoriaIndexStr = readLine(),
+                      let categoriaIndex = Int(categoriaIndexStr),
+                      categoriaIndex > 0 && categoriaIndex <= TipoGastos.allCases.count else {
+                    print("Seleção de categoria inválida.")
+                    continue
+                }
+                let categoriaGasto = TipoGastos.allCases[categoriaIndex - 1]
+
+                print("Digite a descrição do gasto: ")
+                guard let descricaoGasto = readLine(), !descricaoGasto.isEmpty else {
+                    print("Descrição inválida.")
+                    continue
+                }
+                
+                print("Digite o valor do gasto: ")
+                guard let valorGastoStr = readLine(), let valorGasto = Double(valorGastoStr) else {
+                    print("Valor inválido.")
+                    continue
+                }                
+
+                let novoGasto = GastoPessoal(valor: valorGasto, descricao: descricaoGasto, categoria: categoriaGasto)
+                meuGerenciador.adicionarGasto(novoGasto: novoGasto)
+            case 4:
+                print("--- Mostrar Todas as Receitas ---")
+                meuGerenciador.mostrarTodasReceitas()
+            case 5:
+                print("--- Mostrar Todos os Gastos ---")
+                meuGerenciador.mostrarTodosGastos()
+            case 6: 
+                print("--- Consultar Receita Pelo Nome ---")
+                print("Digite o nome da receita: ")
+                guard let nomeReceita: String = readLine(), !nomeReceita.isEmpty else {
+                    print("Nome inválido.")
+                    continue
+                }
+                meuGerenciador.consultarReceitaNome(nome: nomeReceita)
+            case 7:
+                print("--- Consultar Gasto Pelo Nome ---")
+                print("Digite o nome do gasto: ")
+                guard let nomeGasto: String = readLine(), !nomeGasto.isEmpty else {
+                    print("Nome inválido.")
+                    continue
+                }
+                meuGerenciador.consultarGastoNome(nome: nomeGasto)                
+            case 8:
+                print("--- Remover Receita pelo Nome ---")
+                print("Digite o nome da receita: ")
+                guard let nomeReceita: String = readLine(), !nomeReceita.isEmpty else {
+                    print("Nome inválido.")
+                    continue
+                }
+                meuGerenciador.removerReceitaPeloNome(nome: nomeReceita)
+            case 9:
+                print("--- Remover Gasto pelo Nome ---")
+                print("Digite o nome do gasto: ")
+                guard let nomeGasto: String = readLine(), !nomeGasto.isEmpty else{
+                    print("Nome inválido.")
+                    continue
+                }
+                meuGerenciador.removerGastoPeloNome(nome: nomeGasto)
+            case 10:
+                print("--- Editar Receita ---")
+                print("Digite a descrição da receita: ")
+                guard let descricaoAntigaStr: String = readLine(), !descricaoAntigaStr.isEmpty else{
+                    print("Descrição inválida.")
+                    continue
+                }
+                print("Digite a nova descrição da receita: ")
+                guard let novaDescricaoStr: String = readLine(), !novaDescricaoStr.isEmpty else{
+                    print("Descrição inválida.")
+                    continue
+                }
+                print("Digite o novo valor da receita: ")
+                guard let novoValorStr: String = readLine(), let novoValor = Double(novoValorStr) else{
+                    print("Valor inválido.")
+                    continue
+                }
+                print("Escolha a nova categoria da receita:")
+                for (index, tipo) in TiposReceitas.allCases.enumerated() {
+                    print("\(index + 1). \(tipo.rawValue)")
+                }
+                guard let categoriaIndexStr: String = readLine(), 
+                    let categoriaIndex = Int(categoriaIndexStr),
+                    categoriaIndex > 0 && categoriaIndex <= TiposReceitas.allCases.count else {
+                print("Seleção de categoria inválida.")
+                continue
+                }
+                let novaCategoria = TiposReceitas.allCases[categoriaIndex - 1]
+                meuGerenciador.editarReceita(descricaoAntiga: descricaoAntigaStr, novaDescricao: novaDescricaoStr, novoValor: novoValor, novaCategoria: novaCategoria)
+            case 11:
+                print("--- Editar Gasto ---")
+                print("Digite a descrição do gasto: ")
+                guard let descricaoAntigaStr: String = readLine(), !descricaoAntigaStr.isEmpty else {
+                    print("Descrição inválida.")
+                    continue
+                }
+                print("Digite a nova descrição do gasto: ")
+                guard let novaDescricaoStr: String = readLine(), !novaDescricaoStr.isEmpty else{
+                    print("Descrição inválida.")
+                    continue
+                }
+                print("Digite o novo valor do gasto: ")
+                guard let novoValorStr: String = readLine(), let novoValor: Double = Double(novoValorStr) else {
+                    print("Valor inválido!")
+                    continue
+                }
+                print("Escolha a nova categoria do gasto:")
+                for (index, tipo) in TipoGastos.allCases.enumerated(){
+                    print("\(index + 1). \(tipo.rawValue)")
+                }
+                guard let categoriaIndexStr: String = readLine(),
+                let categoriaIndex = Int(categoriaIndexStr),
+                categoriaIndex > 0 && categoriaIndex <= TipoGastos.allCases.count else {
+                    print("Seleção de categoria inválida.")
+                    continue
+                }
+                let novaCategoria = TipoGastos.allCases[categoriaIndex - 1]
+                meuGerenciador.editarGasto(descricaoAntiga: descricaoAntigaStr, novaDescricao: novaDescricaoStr, novoValor: novoValor, novaCategoria: novaCategoria)
+            case 12:
+                print("A média de gastos é: \(meuGerenciador.mediaGastos())")
+
+            case 13:
+                print("--- Definir Meta de Economia ---")
+                print("Digite o valor da meta:")
+                if let metaStr = readLine(), let meta = Double(metaStr) {
+                    let metaDefinida = meuGerenciador.definirMeta(metaAtual: meta)
+                    print("Meta definida para: \(metaDefinida)")
+                } else {
+                    print("Valor de meta inválido.")
+                }
+
+            case 14:
+                print("--- Editar Meta de Economia ---")
+                print("Digite o novo valor da meta:")
+                if let novaMetaStr = readLine(), let novaMeta = Double(novaMetaStr) {
+                    let metaEditada = meuGerenciador.editarMeta(novaMeta: novaMeta)
+                    print("Meta editada para: \(metaEditada)")
+                } else {
+                    print("Valor de meta inválido.")
+                }
+
+            case 15:
+                let falta = meuGerenciador.metaDeEconomia()
+                print(falta)
+
+            case 16:
+                rodandoMenu = false
+            default:
+                print("Opção inválida")
+        }
+    }
+}

@@ -7,7 +7,8 @@
             "cwd": "${workspaceFolder:OrcamentoCLI}",
             "name": "Debug OrcamentoCLI",
             "program": "${workspaceFolder:OrcamentoCLI}/.build/debug/OrcamentoCLI",
-            "preLaunchTask": "swift: Build Debug OrcamentoCLI"
+            "preLaunchTask": "swift: Build Debug OrcamentoCLI",
+            "terminal": "integrated"
         },
         {
             "type": "swift",
